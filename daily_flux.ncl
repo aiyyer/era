@@ -1,9 +1,9 @@
 ;--------------------------------------------------------------------------------------
 ;--------------------------------------------------------------------------------------
 ;
-; ERA INTERIM DATA
+;FOR USE WITH ERA INTERIM DATA
 ;
-; This program creates daily accumulated fluxe (watts/m-sq) of radiative, surface sensible
+; This program creates daily accumulated flux (watts/m-sq) of radiative, surface sensible
 ; and surface latent heat
 ;
 ; The radiative flixes ae: Surface longwave and shortwave; and top  of the atmosphere
@@ -12,7 +12,7 @@
 ;
 ; NCSU Tropical dynamics (NTD)
 ; A. Aiyyer
-;
+; 12/01/2018
 ; This code is part of the ERA Interim analysiis package at NTD
 ;
 ;=========================================================================================
@@ -32,33 +32,37 @@ begin
 
 ; list of variables that we need
   varFile = (/"ttr_179","tsr_178","str_177","ssr_176","sshf_146","slhf_147"/)
+
+
+; Data downloaded from NCAR/DSS
 ; what are the filenames called? set the prefix here
   variables = (/"TTR","TSR","STR","SSR","SSHF","SLHF"/)
 ; the names of variables in the datafiles
   varName = variables + "_GDS4_SFC"
   
-  ystart    = 1980
-  nyears    = 1
- ; ndays     =   30 ;214
+  ystart    = 1998
+  nyears    = 15
+ ;ndays     =   30 ;214
   nvars     =    6
 
 
 ;---------------------------------------------------------------------------------------------
+; data is in yearly files from 1980 to 2010. Thereafter it is in monthly files
+;
     do iy = ystart,ystart+nyears-1
-
     do ivar = 0, nvars-1
      fil := systemfunc("ls /ecmwf/flux/ei.oper.fc.sfc.regn128sc." + varFile(ivar) +"."+iy +"*" )
      print (fil)
      print (" ")
      in   := addfile (fil, "r")
+     
+     
 ; now read the data 
       dat := in->$varName(ivar)$      
       dat!0 = "time"
       dat!1 = "fh"
       dat!2 = "lat"
       dat!3 = "lon" 	
-
-
       dates := in->initial_time0_hours
 
       ;printVarSummary(dat)
@@ -67,8 +71,6 @@ begin
      
 ; array dat has the flux data in it
 ; the data is actually accumulated forecast made from 2 initial times
-; 
-
 ; 
      dimDat = dimsizes(dat)
      ndays  := dimDat(0)/2	
@@ -100,17 +102,15 @@ begin
     printVarSummary(datOut)
 
 ; now open the file and write the data
-; for now write april to dec data since thats what we have for other variables 
+; for now write april through dec data since thats what we have for other variables 
 ; Aug 7, 2018 Aiyyer
     
     do iday = 91,ndays-1
-  
       dateFil := cd_calendar(datOut&time(iday),-2)
       fileName = "/typhoon/eradaily/"+dateFil+".nc" 
       outFile = addfile(fileName, "w")
       outFile->$variables(ivar)$=datOut(iday,:,:)
       print ( iday + " " + dateFil )
-      
     end do
     
   end do ; loop over variables
