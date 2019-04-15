@@ -1,0 +1,26 @@
+April 14
+
+Used daily.ncl for april to dec 1980-2015 (missing days in dec 2015)
+fields averaged 4x to 1x daily: pv, u,v,q,w,T
+
+missing data
+
+for jan-march daily 4x PV data is missing
+
+
+
+missing data
+
+2014 :march era fields
+
+flux 
+
+2011: missing SSR for june 12/1/2018
+
+
+-------below  mostly fixed
+1981: got it
+
+1995 ssr
+1996 sshf
+1997-2002 various missing
