@@ -1,5 +1,9 @@
-April 14
 
+April 17, 2019
+Looks like era precip is only till 2010 in our server: /ecmwf/precip
+
+
+April 14, 2010
 Used daily.ncl for april to dec 1980-2015 (missing days in dec 2015)
 fields averaged 4x to 1x daily: pv, u,v,q,w,T
 

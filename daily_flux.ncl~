@@ -106,12 +106,11 @@ begin
       fileName = "/typhoon/projects/data/eraflux/"+dateFil+".nc" 
 
       if ( firstVar ) then
-        system ("rm " + fileName)
-        outFile = addfile(fileName, "c")	
+      outFile = addfile(fileName, "c")	
       else
-        outFile = addfile(fileName, "w")
+      outFile = addfile(fileName, "w")
       end if
-      
+
       outFile->$variables(ivar)$=datOut(iday,:,:)
       print ( iday + " " + dateFil )
     end do
