@@ -23,9 +23,9 @@ begin
 ; the names of variables in the datafiles
   varName = variables + "_GDS4_SFC"
   
-  ystart    = 1980
-  nyears    = 31
-  nvars     =    1
+  ystart    = 2014
+  nyears    = 1
+  nvars     = 1
 
 
 ;---------------------------------------------------------------------------------------------

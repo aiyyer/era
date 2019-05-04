@@ -40,8 +40,8 @@ begin
 ; the names of variables in the datafiles
   varName = variables + "_GDS4_SFC"
   
-  ystart    = 1998
-  nyears    = 15
+  ystart    = 2011 ;1998
+  nyears    = 1
  ;ndays     =   30 ;214
   nvars     =    6
 
@@ -51,19 +51,19 @@ begin
 ;
     do iy = ystart,ystart+nyears-1
 
-    firstVar = True
-    do ivar = 0, nvars-1
+    firstVar = False
+    do ivar = 3,3 ;0,nvars-1
      fil := systemfunc("ls /ecmwf/flux/ei.oper.fc.sfc.regn128sc." + varFile(ivar) +"."+iy +"*" )
      print (fil)
      print (" ")
-     in   := addfile (fil, "r")
+     in   := addfiles (fil, "r")
 ; now read the data 
-      dat := in->$varName(ivar)$      
+      dat := in[:]->$varName(ivar)$      
       dat!0 = "time"
       dat!1 = "fh"
       dat!2 = "lat"
       dat!3 = "lon" 	
-      dates := in->initial_time0_hours
+      dates := in[:]->initial_time0_hours
 
       ;printVarSummary(dat)
       ;print( cd_calendar(dat&time,-3))
@@ -90,7 +90,7 @@ begin
 ; but first redefine the date relative to hours since "hours since 1-1-1 00:00:0.0"
      datOut&time(iday) = cd_convert( dates(id0), "hours since 1-1-1 00:00:0.0")
 
-     ;print(iday + " " + cd_calendar(datOut&time(iday),-3)  + " " + cd_calendar(dat&time(id12),-3) )
+     print(iday + " " + cd_calendar(datOut&time(iday),-3)  + " " + cd_calendar(dat&time(id12),-3) )
 
      ;print(iday + " " + cd_calendar(datOut&time(iday),-3) )yy
     end do	
@@ -103,8 +103,7 @@ begin
     
     do iday = 0,ndays-1
       dateFil := cd_calendar(datOut&time(iday),-2)
-      fileName = "/typhoon/projects/data/eraflux/"+dateFil+".nc" 
-
+      fileName = "/tamrind/eradaily/2D/"+dateFil+".nc" 
       if ( firstVar ) then
         system ("rm " + fileName)
         outFile = addfile(fileName, "c")	
@@ -113,7 +112,7 @@ begin
       end if
       
       outFile->$variables(ivar)$=datOut(iday,:,:)
-      print ( iday + " " + dateFil )
+      print ( iday + " " + dateFil + " " + variables(ivar))
     end do
     firstVar = False
   end do ; loop over variables

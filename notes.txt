@@ -1,3 +1,5 @@
+April 19
+ssr missing 201106
 
 April 17, 2019
 Looks like era precip is only till 2010 in our server: /ecmwf/precip
