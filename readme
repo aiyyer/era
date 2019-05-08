@@ -1,0 +1,20 @@
+NCSU Tropical Dynamics
+=================================================
+A. Aiyyer
+
+ERA-I related code
+
+This file Updated last:
+	May 8, 2019
+
+
+subdirs
+
+variables/
+	code to calculate some variables
+climo/
+	code to compute long term climo fields
+convert/
+	grib to netcdf conversion
+
+
