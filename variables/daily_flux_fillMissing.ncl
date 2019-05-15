@@ -1,11 +1,25 @@
 ;--------------------------------------------------------------------------------------
 ;--------------------------------------------------------------------------------------
-; Notes: reads the era precip data and writes out daily accumulated values
-; as in the flux data, each day has 2 initializations. 0, and 12 Z
-; Each initialized forecast is made for 6 and 12 hours. So daily accumulations
-; are calculated by adding the two 12 hour forecasts. 
 ;
-; Units of ERA interim precip: m
+;FOR USE WITH ERA INTERIM DATA
+;
+; This program creates daily accumulated flux (watts/m-sq) of radiative, surface sensible
+; and surface latent heat
+;
+; The radiative fluxes ae: Surface longwave and shortwave; and top  of the atmosphere
+; longwave and shortwave
+;
+;
+; NCSU Tropical dynamics (NTD)
+; A. Aiyyer
+; 12/01/2018
+; This code is part of the ERA Interim analysiis package at NTD
+;
+;=========================================================================================
+;
+;
+;
+;Notes
 ;--------------------------------------------------------------------------------------
 ;--------------------------------------------------------------------------------------
 ;
@@ -17,52 +31,51 @@ begin
 
 
 ; list of variables that we need
-  varFile = (/"tp_228"/)
+;  varFile = (/"ttr_179","tsr_178","str_177","ssr_176","sshf_146","slhf_147"/)
+
+  varFile = (/"ssr_176"/)
+
+; Data downloaded from NCAR/DSS
 ; what are the filenames called? set the prefix here
-  variables = (/"TP"/)
+  variables = (/"SSR"/)
 ; the names of variables in the datafiles
   varName = variables + "_GDS4_SFC"
   
-  ystart    = 2014
+  ystart    = 2013 ;1998
   nyears    = 1
-  nvars     = 1
+ ;ndays     =   30 ;214
+  nvars     =    1
 
 
 ;---------------------------------------------------------------------------------------------
+; data is in yearly files from 1980 to 2010. Thereafter it is in monthly files
+;
     do iy = ystart,ystart+nyears-1
- 
-              
-    first = False ; adding to existing daily files
 
-    do ivar = 0, nvars-1
-     fil := systemfunc("ls /ecmwf/precip/ei.oper.fc.sfc.regn128sc." + varFile(ivar) +"."+iy +"*" )
+    firstVar = False
+    do ivar = 0,nvars-1
+     fil := systemfunc("ls /ecmwf/ei.oper.fc.sfc.regn128sc." + varFile(ivar) +"."+iy +"*" )
      print (fil)
      print (" ")
-     in   := addfile (fil, "r")
+     in   := addfiles (fil, "r")
 ; now read the data 
-      dat := in->$varName(ivar)$      
+      dat := in[:]->$varName(ivar)$      
       dat!0 = "time"
       dat!1 = "fh"
       dat!2 = "lat"
       dat!3 = "lon" 	
+      dates := in[:]->initial_time0_hours
 
+      printVarSummary(dat)
+      print( cd_calendar(dat&time,-3))
+      print(dat&fh)
+     exit
 
-      dates := in->initial_time0_hours
-
-      ;printVarSummary(dat)
-      ;print( cd_calendar(dat&time,-3))
-      ;print(dat&fh)
-     
-; array dat has the precip data in it
+; array dat has the flux data in it
 ; the data is actually accumulated forecast made from 2 initial times
 ; 
-
-; 
      dimDat = dimsizes(dat)
-  
-     ndays  := dimDat(0)/2
-     print (ndays)
-    
+     ndays  := dimDat(0)/2	
      datOut := dat(0:ndays-1,0,:,:)
 ;     printVarSummary(datOut)
       
@@ -79,7 +92,7 @@ begin
 ; but first redefine the date relative to hours since "hours since 1-1-1 00:00:0.0"
      datOut&time(iday) = cd_convert( dates(id0), "hours since 1-1-1 00:00:0.0")
 
-     ;print(iday + " " + cd_calendar(datOut&time(iday),-3)  + " " + cd_calendar(dat&time(id12),-3) )
+     print(iday + " " + cd_calendar(datOut&time(iday),-3)  + " " + cd_calendar(dat&time(id12),-3) )
 
      ;print(iday + " " + cd_calendar(datOut&time(iday),-3) )yy
     end do	
@@ -89,21 +102,16 @@ begin
 
     datOut&time@units = "hours since 1-1-1 00:00:0.0"
     printVarSummary(datOut)
-
-; now open the file and write the data
-; for now write april to dec data since thats what we have for other variables 
-; Aug 7, 2018 Aiyyer
     
-    do iday = 91,ndays-1
-  
+    do iday = 0,ndays-1
       dateFil := cd_calendar(datOut&time(iday),-2)
-      fileName = "/typhoon/eradaily/"+dateFil+".nc" 
-      outFile = addfile(fileName, "w")
-      outFile->$variables(ivar)$=datOut(iday,:,:)
-      print ( iday + " " + dateFil )
+      fileName = "/tamrind/eradaily/2D/"+dateFil+".nc" 
+       outFile = addfile(fileName, "w")
       
+      outFile->$variables(ivar)$=datOut(iday,:,:)
+     ; print ( iday + " " + dateFil + " " + variables(ivar))
     end do
-    
+    firstVar = False
   end do ; loop over variables
 end do    ; loop over years
 

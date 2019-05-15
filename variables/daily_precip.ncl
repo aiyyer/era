@@ -23,8 +23,8 @@ begin
 ; the names of variables in the datafiles
   varName = variables + "_GDS4_SFC"
   
-  ystart    = 2014
-  nyears    = 1
+  ystart    = 1999
+  nyears    = 12
   nvars     = 1
 
 
@@ -35,23 +35,44 @@ begin
     first = False ; adding to existing daily files
 
     do ivar = 0, nvars-1
-     fil := systemfunc("ls /ecmwf/precip/ei.oper.fc.sfc.regn128sc." + varFile(ivar) +"."+iy +"*" )
-     print (fil)
-     print (" ")
-     in   := addfile (fil, "r")
+
+
+      if ( iy .lt. 2011 ) then
+      
+      
+        fil := systemfunc("ls /ecmwf/precip/ei.oper.fc.sfc.regn128sc." + varFile(ivar) +"."+iy +"*" )
+        print (fil)
+        print (" ")
+        in   := addfile (fil, "r")
 ; now read the data 
-      dat := in->$varName(ivar)$      
-      dat!0 = "time"
-      dat!1 = "fh"
-      dat!2 = "lat"
-      dat!3 = "lon" 	
+        dat := in->$varName(ivar)$      
+        dat!0 = "time"
+        dat!1 = "fh"
+        dat!2 = "lat"
+        dat!3 = "lon" 	
+        dates := in->initial_time0_hours
+        
+      else
+
+        fils := systemfunc("ls /tamrind/era/precip/" + iy + "*.grib" )
+        print (fils)
+        print (" ")
+        in   := addfiles (fils, "r")
+; now read the data 
+        dat := in[:]->$varName(ivar)$      
+        dat!0 = "time"
+        dat!1 = "fh"
+        dat!2 = "lat"
+        dat!3 = "lon" 	
+        dates := in[:]->initial_time0_hours
+        
 
 
-      dates := in->initial_time0_hours
+      end if
 
-      ;printVarSummary(dat)
-      ;print( cd_calendar(dat&time,-3))
-      ;print(dat&fh)
+      printVarSummary(dat)
+                                ;print( cd_calendar(dat&time,-3))
+                                ;print(dat&fh)
      
 ; array dat has the precip data in it
 ; the data is actually accumulated forecast made from 2 initial times
@@ -90,14 +111,12 @@ begin
     datOut&time@units = "hours since 1-1-1 00:00:0.0"
     printVarSummary(datOut)
 
-; now open the file and write the data
-; for now write april to dec data since thats what we have for other variables 
-; Aug 7, 2018 Aiyyer
+
     
-    do iday = 91,ndays-1
+    do iday = 0,ndays-1
   
       dateFil := cd_calendar(datOut&time(iday),-2)
-      fileName = "/typhoon/eradaily/"+dateFil+".nc" 
+      fileName = "/tamrind/eradaily/2D/"+dateFil+".nc" 
       outFile = addfile(fileName, "w")
       outFile->$variables(ivar)$=datOut(iday,:,:)
       print ( iday + " " + dateFil )

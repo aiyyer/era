@@ -40,10 +40,9 @@ begin
 ; the names of variables in the datafiles
   varName = variables + "_GDS4_SFC"
   
-  ystart    = 2011 ;1998
-  nyears    = 1
- ;ndays     =   30 ;214
-  nvars     =    6
+  ystart    = 2012 ;1998
+  nyears    = 6
+  nvars     =    4
 
 
 ;---------------------------------------------------------------------------------------------
@@ -52,8 +51,8 @@ begin
     do iy = ystart,ystart+nyears-1
 
     firstVar = False
-    do ivar = 3,3 ;0,nvars-1
-     fil := systemfunc("ls /ecmwf/flux/ei.oper.fc.sfc.regn128sc." + varFile(ivar) +"."+iy +"*" )
+    do ivar = 0,nvars-1
+     fil := systemfunc("ls /ecmwf/flux/2011_2018/ei.oper.fc.sfc.regn128sc." + varFile(ivar) +"."+iy +"*" )
      print (fil)
      print (" ")
      in   := addfiles (fil, "r")

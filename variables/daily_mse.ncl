@@ -64,6 +64,8 @@ begin
       Dse@long_name = "Dry Static Energy"
       Dse@units = "J/kg"
       
+
+
     
  
     
@@ -172,7 +174,8 @@ begin
         datFile = addfile(fileName, "c")
       end if
       
-      
+      print ( Mse(:,{10.},{340.}) + " " + Dse(:,{10.},{340.})  )
+      exit      
       
       datFile->Mse=Mse
       datFile->zonalAdvMse=zonalAdvMse

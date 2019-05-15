@@ -7,23 +7,24 @@
 begin
 
   
-  ystart    = 1981
-  nyears    =   35
+  ystart    = 1998
+  nyears    =   17
 
   ih = 00
   mi = 00
   se = 00
 
   ; list of variables that we need
-  variables = (/"PV","V","U","W","Q","Z","T"/)
-  nvar=6
+  variables = (/"Mse","Dse","Q","Z","T","PV","V","U","W"/)
+  nvar=8
 
   fileName = "/tamrind/eradaily/3Dclimo/jas.nc"
-;  system ("rm " + fileName)
+  fileName = "/typhoon/projects/data/climo/era/daily_to_jas_1998_2014climo.nc"
+; system ("rm " + fileName)
   outFile = addfile(fileName, "w")
 
 
-  do ivar = 0,0 ;nvar-1
+  do ivar = 2,nvar-1
 
     icount = 0.
     do iy = ystart,ystart+nyears-1 
@@ -43,6 +44,8 @@ begin
       ;rint (cd_calendar(dateArray,-2))
       dates := cd_calendar(dateArray,-2)
       fils  := "/tamrind/eradaily/3D/"+ dates  +".nc" 
+      ;fils  := "/tamrind/eradaily/3D_derived/"+ dates  +".nc" 
+
       ;print(fils)
       in   := addfiles (fils, "r")
       ListSetType (in, "join")             ; concatenate or "merge" (default)
