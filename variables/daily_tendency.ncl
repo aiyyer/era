@@ -25,7 +25,7 @@ begin
 
 
 ; derived variable
-  variable = "ColAvgDse"
+  variable = "ColAvgQ"
 
 ; the names of variables in the datafiles
   varName = variable

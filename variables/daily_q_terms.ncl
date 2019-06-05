@@ -4,6 +4,13 @@
 ;
 ; Reads daily ERA interim data and calculates the advection of Q
 ; and writes back to the daily files
+; Reads Q,U,V,W
+;
+; Q is not multiplied by L (latent heat of vaporization)
+; units of advection are [Q]/s
+;
+; Calculates and outputs: zonalAdvQ meridAdvQ vertAdvQ 
+;
 ; 
 ;--------------------------------------------------------------------------------------
 ; NCSU Tropical Dynamics
@@ -18,12 +25,6 @@ load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/contributed.ncl"
 begin
 
 ;-----------------------------------------------------------------------------------------  
-; define constants  
-  L  = 2.501e6
-  cp = 1005.7
-  grav = 9.8
-;  
-  
   ystart    =   1998
   nyears    =   17
   ndays     =   152
@@ -114,7 +115,7 @@ begin
       datFile->vertAdvQ=vertAdvQ
 
       date = date + 24.    
-    end do ; loop over day
+    end do  ; loop over day
   end do    ; loop over years
   
 end

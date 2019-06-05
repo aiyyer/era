@@ -5,6 +5,12 @@
 ; Reads daily ERA interim data and calculates the column average moist and dry static 
 ; energies and their advections
 ;
+; Reads T,Z,Q,U,V,W
+;
+; Calculates and outputs: Mse zonalAdvMse meridAdvMse vertAdvMse 
+;                         Dse zonalAdvDse meridAdvDse vertAdvDse
+;
+;
 ;--------------------------------------------------------------------------------------
 ; NCSU Tropical Dynamics
 ;
@@ -45,14 +51,12 @@ begin
       fileName = "/tamrind/eradaily/3D/" +dateFil+".nc"
       datFile = addfile(fileName, "w")
       ;print(fileName)
-      U = datFile->U ;(:,::-1,:) no need to flip lats as we are using cfd routines below
+      U = datFile->U ;(:,::-1,:)  ; no need to flip lats as we are using cfd routines below
       V = datFile->V ;(:,::-1,:)
-      T = datFile->T ;(:,::-1,:)
-      Z = datFile->Z ;(:,::-1,:)  ; erai Z = gz so no need to multiply by g
+      T = datFile->T ;(:,::-1,:)  ; Temp in K
+      Z = datFile->Z ;(:,::-1,:)  ; erai Z = gz m**2 s**-2  so no need to multiply by g
       Q = datFile->Q ;(:,::-1,:)  ; eri Q is in kg/kg
       W = datFile->W ;(:,::-1,:)  ; erai in Pa/s
-
-
 
       Mse  = Q
       Mse  = cp*T + Z + L*Q ; erai Z = gz so no need to multiply by g
@@ -60,7 +64,7 @@ begin
       Mse@units = "J/kg"
 
       Dse = Q
-      Dse  = cp*T + Z ; erai Z = gz so no need to multiply by g
+      Dse = cp*T + Z ; erai Z = gz so no need to multiply by g
       Dse@long_name = "Dry Static Energy"
       Dse@units = "J/kg"
       
@@ -119,26 +123,6 @@ begin
       meridAdvMse@long_name = "Merid  Advection of MSE"
       meridAdvMse@units = "J/kg/s"
 ;------------------------------------------------------------------------------
-; now calculate the horizontal gradient of mse to then get advections
-      
-      grad  = grad_latlon_cfd (Mse, Mse&lat, Mse&lon, True, False)
-      mY = grad[0]
-      mX = grad[1]
-      copy_VarMeta(Q,mY)
-      copy_VarMeta(Q,mX)      
-; zonal advection 
-      zonalAdvMse  = -U*mX
-      meridAdvMse  = -V*mY
-      
-      copy_VarMeta(Q,zonalAdvMse)
-      copy_VarMeta(Q,meridAdvMse)      
-      zonalAdvMse@long_name = "Zonal Advection of MSE"
-      zonalAdvMse@units = "J/kg/s"
-      meridAdvMse@long_name = "Merid  Advection of MSE"
-      meridAdvMse@units = "J/kg/s"
-
-;------------------------------------------------------------------------------
-
 ; now calculate the horizontal gradient of dse to then get advections
       
       grad  = grad_latlon_cfd (Dse, Dse&lat, Dse&lon, True, False)
@@ -148,24 +132,14 @@ begin
       copy_VarMeta(Q,mX)      
 ; zonal advection 
       zonalAdvDse  = -U*mX
-      meridAdvDse  = -V*mY
-      
+      meridAdvDse  = -V*mY      
       copy_VarMeta(Q,zonalAdvDse)
       copy_VarMeta(Q,meridAdvDse)      
-
       zonalAdvDse@long_name = "Zonal Advection of DSE"
       zonalAdvDse@units = "J/kg/s"
       meridAdvDse@long_name = "Merid  Advection of MSE"
       meridAdvDse@units = "J/kg/s"
 ;------------------------------------------------------------------------------
-
-  
-      
-      ;print ( Mse(:,{10.},{20.}) + " " +  meridAdvMse(:,{10.},{20.}))
-      ;printVarSummary(meridAdvMse)
-      
-      
-      
       
       fileName = "/tamrind/eradaily/3D_derived/" +dateFil+".nc"
       if (fileexists(fileName)) then
