@@ -54,6 +54,13 @@ begin
         in   := addfile (fil, "r")
         dat := in->$variables(ivar)$      
 
+        if ( dat@time_units .ne. units ) then
+          print ("fix units of time. They do not match! Aborting code")
+          exit
+        end if
+
+
+
         if (firstTime) then
           clim = dat
           clim = 0.0
@@ -80,7 +87,7 @@ begin
           firstTime = False
         end if        
         clim = clim*ic/(ic+1.) + dat/(ic+1.)
-        print ( ic + " " + filDat + " "  + clim(0,20,20) + " " + dat(0,20,20) )
+        print ( id + " " + ic + " " + filDat + " "  + clim(0,20,20) + " " + dat(0,20,20) )
         ic=ic + 1.
       end do
       print ( " " )
@@ -88,10 +95,9 @@ begin
 ; done averaing over all years for this day
 
 
-      times(id) = sdate
+      times(id)         = sdate
       climAll(id,:,:,:) = clim
-     
-      sdate = sdate + 1
+      sdate = sdate + 24.  ; increment of hours
     end do
  
 
