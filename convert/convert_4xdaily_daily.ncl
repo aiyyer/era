@@ -41,8 +41,8 @@ begin
     ih = 00
     mi = 00
     se = 00
+; the units should be the same as those in the 4x daily data files
     units = "hours since 1-1-1 00:00:0.0"
-    
     
 ; for each year go from april to dec
     
