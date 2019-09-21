@@ -12,10 +12,6 @@ begin
 ;***************************************************************
                                              ; INPUT
    diri   = "./"                             ; input directory     
-
-
-
-
    fili   = "/tamrind/climo/era/synoptic_climo.nc"
    pltDir  = "./"                        ; directory for plot output
    pltName = "Z"                    ; netCDF name output
@@ -25,6 +21,14 @@ begin
 
    time = f->time
    print(time + " " + cd_calendar(time,-3) )
+   units = time@units
+
+
+   print (units)
+
+
+
+
    wks    = gsn_open_wks(pltType, pltDir+pltName)
    res                      = True     ; plot mods desired
    ;res@cnFillPalette   = "GMT_cool"   ; change the color palette
@@ -72,17 +76,36 @@ begin
 ;   res@gsnCenterString      = cd_calendar(time,-3)
 
 
-   dat = f->Z(:,{400.},:,:)
-   dat = (dat*.1)/9.8 ;in dam 
-   dat@units ="dam"
-   dat@long_name = "Z" 
 
-   do id = 100,130
-     res@tiMainString         = cd_calendar(time(id),-3)
+
+   y = 1979
+   m = 5
+   d = 3
+   h = 0
+   
+   opt = 0
+   dat := f->Z(:,{400.},:,:)
+
+
+   date=ut_inv_calendar (y,m,d,h,0,0,units,opt)
+ 
+   do id = 0,4
      
-     plot    = gsn_csm_contour_map(wks,dat(id,:,:), res)
+     dat := f->Z({date},{400.},:,:)
+     dat  = (dat*.1)/9.8 ;in dam 
+     dat@units ="dam"
+     dat@long_name = "Z" 
+     
+     print ( date + " " + cd_calendar(date,-3) + " " + dat@time + " " + dat({20.},{20.}) )
+     
+     res@tiMainString         = cd_calendar(date,-3)
+     
+     plot    = gsn_csm_contour_map(wks,dat, res)
+
+     date = date + 24
+
    end do
 
    
    
-  end
+   end
