@@ -81,8 +81,13 @@ begin
    opt = 0
    units = "hours since 1900-01-01 00:00:00"
    date=ut_inv_calendar(y,m,d,h,0,0,units,opt)
-
    ndays = 5
+
+   
+   
+
+
+
    level = 1000
    var = "Z"
    scale = 1./98.
