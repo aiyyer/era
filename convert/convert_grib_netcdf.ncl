@@ -29,12 +29,12 @@ begin
 ; the names of variables in the datafiles
   varName = variables + "_GDS4_ISBL"
   
-  ystart    = 2004
-  nyears    = 1
-  nvars     = 5   ; missing omega and PV for months 1-3
+  ystart    = 1980
+  nyears    = 21
+  nvars     = 7   ; missing omega and PV for months 1-3
   
   im = 04
-  id = 19
+  id = 01
   ih = 00
   mi = 00
   se = 00
@@ -42,7 +42,7 @@ begin
   hours = ispan(0,18,6)
   
 ;---------------------------------------------------------------------------------------------
-  do iy = ystart,ystart+nyears-1
+  do iy = ystart,ystart+nyears-1,4
     dateS := ut_inv_calendar(iy,im,id,ih,mi,se,units,0)
     printVarSummary(dateS)
     date = new(4,typeof(dateS) )
@@ -58,17 +58,17 @@ begin
       ndays=365
     end if
 
-    ndays = 257
+    ndays = 273
     do ntimes = 0,ndays-1
       dateFil = cd_calendar(date,-3)
       ;printVarSummary(dateFil)
       print(date + " " + dateFil) 
 
      
-      do ivar = 0, nvars-1
+      do ivar = 5,6
 
         print ( ivar + " " + variables(ivar) )
-        fils := "/typhoon/era/" + dateFil + "." +  varFile(ivar)  + ".grib" 
+        fils := "/typhoon/era/daily/" + dateFil + "." +  varFile(ivar)  + ".grib" 
         ;print (fils)
         in   := addfiles (fils, "r")
         ListSetType (in, "join")             ; concatenate or "merge" (default)
@@ -96,10 +96,10 @@ begin
         dayId = dateFil(0)/100
         ;print (dayId)
 
-        fileName = "/tamrind/era/data/all/"+dayId+".nc"  ;+"_"+variables(ivar)+".nc"
+        fileName = "/tamrind/era/3D/"+dayId+".nc"  ;+"_"+variables(ivar)+".nc"
         if (fileexists(fileName) ) then
           outFile = addfile(fileName, "w")
-          ;print ( "writing to the file" + fileName)
+          print ( "writing to the file" + fileName)
         else
           ;print ( "creating the file" + fileName)
           outFile = addfile(fileName, "c")

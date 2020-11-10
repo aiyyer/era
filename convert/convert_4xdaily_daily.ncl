@@ -20,23 +20,23 @@ begin
 
 
 ; list of variables that we need
-  variables = (/"V","U","Q","Z","T","W","PV"/)
+  variables = (/"PV","W","V","U","Q","Z","T"/)
 ; what are the filenames called? set the prefix here
-  varFile = (/"uv","uv","hum","geo","geo","omega","pv"/)
+  varFile = (/"pv","omega","uv","uv","hum","geo","geo","omega"/)
 ; the names of variables in the datafiles
   varName = variables + "_GDS4_ISBL"
   
-  ystart    = 1995
-  nyears    = 3
-  ndays     = 170   ;214
-  nvars     = 7   ; missing omega and PV for months 1-3
+  ystart    = 1980
+  nyears    = 1
+  ndays     = 275
+  nvars     = 2   ; missing omega and PV for months 1-3
   
   ndays = 62
 
 ;---------------------------------------------------------------------------------------------
   do iy = ystart,ystart+nyears-1
     
-    im = 06
+    im = 04
     id = 01
     ih = 00
     mi = 00
@@ -52,8 +52,8 @@ begin
       dateFil = cd_calendar(date,-2)
       print(date + " " + dateFil)      
       first = False
-      do ivar = 5,5 ;0, nvars-1
-        fils := systemfunc("ls /typhoon/era/" + dateFil + "*." +  varFile(ivar)  + ".grib" )
+      do ivar = 0,1
+        fils := systemfunc("ls /typhoon/era/daily/" + dateFil + "*." +  varFile(ivar)  + ".grib" )
                                 ;rint (fils)
                                 ;rint (" ")
         in   := addfiles (fils, "r")
@@ -90,7 +90,7 @@ begin
         else
           outFile = addfile(fileName, "w")
         end if
-                                ;print ("writing to: " + fileName)
+        print ("writing to: " + fileName)
         outFile->$variables(ivar)$=datAve
       end do ; loop over variables
 

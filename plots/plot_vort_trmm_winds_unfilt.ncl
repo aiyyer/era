@@ -16,9 +16,9 @@ load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/contributed.ncl"
 begin
 
 
-  level2 = 925
-  level1 = 850
-  level0 = 600
+  level2 = 850
+  level1 = 600
+  level0 = 300
 
   eraDir = "/typhoon/era/"
  ; eraDir = "/home/anant/data100/era/"
@@ -37,11 +37,11 @@ begin
   print (trmmTimeUnits)
   
   
-  do year = 2010,2010
+  do year = 2007,2007
     month  = 5
-    day    = 26
+    day    = 20
     hour   = 0
-    ntimes = 6*4
+    ntimes = 14*4
 
 
 ; helene 2006
@@ -108,9 +108,9 @@ begin
     res@cnInfoLabelOn       = False           ; turn off cn info label
     
     res@mpMinLonF          = 40.           ; choose a subregion
-    res@mpMaxLonF          = 80.
-    res@mpMinLatF          = -5.           ; choose a subregion
-    res@mpMaxLatF          =  30.
+    res@mpMaxLonF          = 90.
+    res@mpMinLatF          = -10.           ; choose a subregion
+    res@mpMaxLatF          =  25.
     res@pmTickMarkDisplayMode = "Always"
     res@mpFillOn              =  False          ; turn off map fill
     res@mpOutlineDrawOrder    = "PostDraw"      ; draw continental outline last
@@ -158,13 +158,13 @@ begin
     resVor@cnInfoLabelOn       = False           ; turn off cn info label
     
     resVor@cnLevelSelectionMode = "ManualLevels"     ; set manual contour levels
-    resVor@cnMinLevelValF       =  2.0               ; set min contour level
+    resVor@cnMinLevelValF       =  1.0               ; set min contour level
     resVor@cnMaxLevelValF       =  20.                 ; set max contour level
     resVor@cnLevelSpacingF      =  1.0               ; set contour spacing
     resVor@cnFillOn             = False               ; turn on color for contours
     resVor@cnLinesOn            = True              ; turn off contour lines
     resVor@cnLineLabelsOn       = False              ; turn off contour line labels
-    resVor@cnLineThicknessF= 1. 
+    resVor@cnLineThicknessF= 2. 
 
     resP                     = True                ; modify the panel plot    
     resP@gsnPanelLabelBar    = True                ; add common colorbar
@@ -242,17 +242,17 @@ begin
 ;
     plot = new(3, "graphic")
 ;
-    res@gsnLeftString  = level0 + " hPa"
+    res@gsnLeftString  = level0 + " hPa " + date2
     plot(0)   = gsn_csm_vector_scalar_map(wks,u1,v1,pcp(:,:),res)
     plotVor  = gsn_csm_contour(wks,vr1,resVor)
     overlay(plot(0),plotVor)
 ;
-    res@gsnLeftString  = level1 + " hPa"
+    res@gsnLeftString  = level1 + " hPa "+ date2
     plot(1)   = gsn_csm_vector_scalar_map(wks,u2,v2,pcp(:,:),res)
     plotVor  = gsn_csm_contour(wks,vr2,resVor)
     overlay(plot(1),plotVor)
 ;
-    res@gsnLeftString  = level2 + " hPa"
+    res@gsnLeftString  = level2 + " hPa " + date2
     plot(2)   = gsn_csm_vector_scalar_map(wks,u3,v3,pcp(:,:),res)
     plotVor  = gsn_csm_contour(wks,vr3,resVor)
     overlay(plot(2),plotVor)
@@ -275,8 +275,9 @@ begin
       do j = 0,ns-1
         is = TCIndices(j)
         print ( itimes + " " + ibLons2(is) + " " + ibLats2(is) ) 
-        hurri = gsn_add_text(wks,plot(0), "~F37~p~F",ibLons2(is),ibLats2(is), txres ) 
-        hurri = gsn_add_text(wks,plot(1), "~F37~p~F",ibLons2(is),ibLats2(is), txres ) 
+        hurri1 = gsn_add_text(wks,plot(0), "~F37~p~F",ibLons2(is),ibLats2(is), txres ) 
+        hurri2 = gsn_add_text(wks,plot(1), "~F37~p~F",ibLons2(is),ibLats2(is), txres ) 
+        hurri3 = gsn_add_text(wks,plot(2), "~F37~p~F",ibLons2(is),ibLats2(is), txres ) 
       end do
     end if
 

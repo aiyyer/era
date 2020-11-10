@@ -1,0 +1,147 @@
+; reads the longterm daily average data and creates a synoptic
+; climo by doing a running mean
+;
+; first run longterm_climo_4xdaily.ncl
+;
+; 4x daily
+;
+;
+; Last Updated:
+;
+;      Oct 5, 2020
+;---------------------------------------------------------------
+
+;load "../../ncl/codeTime_sub.ncl"
+load "../../ncl/aiyyer_string_routines.ncl"
+  
+load "$NCARG_ROOT/lib/ncarg/nclscripts/contrib/cd_string.ncl" 
+
+begin
+  
+
+
+  ih = 00
+  mi = 00
+  se = 00
+
+  ; list of variables that we need
+  variables = (/"Z","U","V","W","Q","PV"/)
+  nvar=8
+
+
+; output file
+  setfileoption("nc", "Format",  "NetCDF4")
+  fileName = "/tamrind/climo/era/synoptic_climo_4xdaily_smooth.nc"
+  createFile= False
+  if ( createFile ) then
+    outFile = addfile(fileName, "c")
+  else
+    outFile = addfile(fileName, "w")
+    
+  end if
+  
+  
+  
+  do ivar = 0,0
+    
+    imon = 04	
+    iday = 01
+    units = "hours since 1-1-1 00:00:0.0"
+    year = 1979 ; choose a non-leap year
+    sdate = ut_inv_calendar(year,imon,iday,0,0,0,units,0)
+    
+    ndays = 265
+    times := new(ndays,typeof(sdate)) 
+    times@units    = sdate@units
+    times@calendar = sdate@calendar
+    
+
+    firstTime = 1
+
+    do id = 0,ndays-1
+      
+      dd = tointeger(cd_calendar(sdate,-3))
+      stime = cd_string(sdate,"%N%D")
+
+
+      fileName = "/tamrind/climo/era/daily/climo_"+stime+".nc"
+      inFile = addfile(fileName, "r")
+      dailyClim=inFile->$variables(ivar)$
+
+      print ( id + " " + fileName)
+      print (dailyClim&time + " " + cd_calendar(dailyClim&time,-3)+" " + dailyClim(:,{500},{20},{320}) )
+      exit
+
+
+
+      if ( firstTime .eq. 1 ) then
+        dims = dimsizes(dailyClim)
+        nz = dims(1)
+        ny = dims(2)
+        nx = dims(3)
+        firstTime=0
+        nt = ndays*4
+        print ("nt = " + nt)
+        climSmooth = new ( (/nt,nz,ny,nx/), typeof(dailyClim) )
+        climSmooth!0 = "time"
+        climSmooth!1 = "level"
+        climSmooth!2 = "lat"
+        climSmooth!3 = "lon"
+        climSmooth&level = dailyClim&level
+        climSmooth&lat = dailyClim&lat
+        climSmooth&lon = dailyClim&lon
+        print ("Created climsSmoothArray")
+        printVarSummary(climSmooth)
+        deltaT  = new (4,typeof(sdate))
+      end if
+
+
+      itA = id*4
+      itB = (id+1)*4-1
+
+      
+      
+      ;print ( sdate + " " + cd_calendar(sdate,-3) + " " + itA + " " + itB )
+
+      climSmooth(itA:itB,:,:,:) = dailyClim
+
+      deltaT =  6.*fspan(0,3,4) + sdate
+      climSmooth&time(itA:itB)  = deltaT
+
+      ;print (  climSmooth&time(itA:itB) + " " +  cd_calendar(climSmooth&time(itA:itB),-3 ) )
+      
+
+
+
+
+      sdate = sdate + 24.  ; increment of hours
+
+  end do
+
+  print ( climSmooth&time + " " + cd_calendar(climSmooth&time,-3) ) 
+
+; now do a N day running average  
+  N = 7 ; odd
+  NN = (N-1)/2
+  climSmooth = runave_n_Wrap(climSmooth,N,0,0) 
+
+  printVarSummary(climSmooth)
+
+
+; done averaing over all years for this day
+
+    print ( "Writing out to file" )
+    outFile->$variables(ivar)$=climSmooth
+
+    print ( climSmooth(0:10,{500},{20},{320})) ; + " " +  climSmooth2(:,{500},{20},{320}) )
+end do
+  print ("*********************************************************")
+  print ("****Normal code termination******************************")
+  print ("*********************************************************")
+  
+  
+
+
+end
+
+
