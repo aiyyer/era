@@ -19,7 +19,7 @@ begin
 
   level = 850
 
-  do iy = 1980,2015
+  do iy = 1999,2002
 
     startDate = cd_inv_calendar(iy,01,01,0,0,0,units,0)
     endDate   = cd_inv_calendar(iy,12,31,0,0,0,units,0)

@@ -30,11 +30,11 @@ begin
   varName = variables + "_GDS4_ISBL"
   
   ystart    = 1980
-  nyears    = 21
-  nvars     = 7   ; missing omega and PV for months 1-3
+  nyears    = 1
+  nvars     = 6   ; missing omega and PV for months 1-3
   
-  im = 04
-  id = 01
+  im = 1
+  id = 1
   ih = 00
   mi = 00
   se = 00
@@ -42,23 +42,25 @@ begin
   hours = ispan(0,18,6)
   
 ;---------------------------------------------------------------------------------------------
-  do iy = ystart,ystart+nyears-1,4
+  do iy = ystart,ystart+nyears-1
     dateS := ut_inv_calendar(iy,im,id,ih,mi,se,units,0)
-    printVarSummary(dateS)
     date = new(4,typeof(dateS) )
 
     date = dateS
     date = dateS + hours
 
-    ;print (date + " " + cd_calendar(date,-3))
-    ;exit
+    print (date + " " + cd_calendar(date,-3))
 
     ndays = 365
     if (isleapyear(iy)) then
-      ndays=365
+      ndays=366
     end if
 
-    ndays = 273
+
+
+    ndays = 31
+
+
     do ntimes = 0,ndays-1
       dateFil = cd_calendar(date,-3)
       ;printVarSummary(dateFil)
@@ -96,7 +98,7 @@ begin
         dayId = dateFil(0)/100
         ;print (dayId)
 
-        fileName = "/tamrind/era/3D/"+dayId+".nc"  ;+"_"+variables(ivar)+".nc"
+        fileName = "/tamrind/era/3D/"+dayId+".nc" 
         if (fileexists(fileName) ) then
           outFile = addfile(fileName, "w")
           print ( "writing to the file" + fileName)
