@@ -31,16 +31,18 @@ begin
   variables = (/"PV","W","T","Z","U","V","W","Q"/)
   nvar=8
 
-  do iy = 1980,2015
+  do iy = 2015,2015
 
-    startDate = cd_inv_calendar(iy,01,01,0,0,0,units,0)
-    endDate   = cd_inv_calendar(iy,12,31,0,0,0,units,0)
-    print ( startDate + " " + startDate )
 
     ndays = 365
     if (isleapyear(iy)) then
       ndays=366
     end if
+
+    startDate = cd_inv_calendar(iy,01,01,0,0,0,units,0)
+    endDate   = cd_inv_calendar(iy,12,31,0,0,0,units,0)
+    ;print ( startDate + " " + startDate )
+
 
     date = startDate
 

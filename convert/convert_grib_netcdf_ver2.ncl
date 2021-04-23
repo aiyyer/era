@@ -34,7 +34,7 @@ begin
 
 
   ystart    = 1980
-  nyears    = 1  
+  nyears    = 36 
   im = 1
   id = 1
   ih = 00
@@ -50,8 +50,6 @@ begin
 
     date = dateS
     date = dateS + hours
-
-    print (date + " " + cd_calendar(date,-3))
 
     ndays = 365
     if (isleapyear(iy)) then

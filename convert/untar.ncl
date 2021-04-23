@@ -30,7 +30,7 @@ begin
   varName = variables + "_GDS4_ISBL"
 
 
-  dir = "/typhoon/era/daily/"
+  dir = "/typhoon/era/scripts/"
 
   files = systemfunc("ls " + dir + "*.tar")
 

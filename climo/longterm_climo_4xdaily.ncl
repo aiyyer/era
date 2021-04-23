@@ -17,15 +17,15 @@ load "$NCARG_ROOT/lib/ncarg/nclscripts/contrib/cd_string.ncl"
 begin
   
   ystart    = 1980
-  nyears    =  35
+  nyears    =  39
 
   ih = 00
   mi = 00
   se = 00
 
   ; list of variables that we need
-  variables = (/"PV","W","T","Z","U","V","W","Q","PV"/)
-  nvar=8
+  variables = (/"Q","PV","W","T","Z","U","V","W","Q","PV"/)
+  nvar=1
 
 
 ; output file
@@ -34,15 +34,15 @@ begin
   firstTime = True
 
 
-  do ivar = 0,1
+  do ivar = 0,0
 
-    imon = 05	
+    imon = 01	
     iday = 01
     units = "hours since 1-1-1 00:00:0.0"
     year = 1979 ; choose a non-leap year
     sdate = ut_inv_calendar(year,imon,iday,0,0,0,units,0)
     
-    ndays = 234
+    ndays = 365
     times := new(ndays,typeof(sdate)) 
     times@units    = sdate@units
     times@calendar = sdate@calendar
@@ -57,7 +57,15 @@ begin
       stime = cd_string(sdate,"%N%D")
 
       fileName = "/tamrind/climo/era/daily/climo_"+stime+".nc"
-      outFile = addfile(fileName, "w")
+            if (fileexists(fileName) ) then
+        print ( "writing to the file" + fileName)
+        outFile = addfile(fileName, "w")
+	else
+       print ( "creating the file" + fileName)
+        outFile = addfile(fileName, "c")
+
+	end if
+
 
 ;---------------------------------------------------------------
       ic = 0.      
@@ -67,12 +75,12 @@ begin
         filDat = ymd_string(iy,date(0,1),date(0,2))        
         fil = "/tamrind/era/3D/"+ filDat  +".nc" 
         
-        print (fil)
+        print (iy + " " + fil)
         in  := addfile (fil, "r")
         dat := in->$variables(ivar)$
         ;printVarSummary(dat)
        
-        ;print ( dat&time(0) + " " +  cd_calendar( dat&time(0),-3) + " " +  dat&time(3) + " " +  cd_calendar( dat&time(3),-3))
+        print ( dat&time(0) + " " +  cd_calendar( dat&time(0),-3) + " " +  dat&time(3) + " " +  cd_calendar( dat&time(3),-3))
         
         
 ; the attribute time is causing trouble later when data is accessed

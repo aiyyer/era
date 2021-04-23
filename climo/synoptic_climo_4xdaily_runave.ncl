@@ -28,7 +28,7 @@ begin
   se = 00
 
   ; list of variables that we need
-  variables = (/"T","Z","U","V","W","Q","PV"/)
+  variables = (/"PV","T","Z","U","V","W","Q","PV"/)
   
 
 
@@ -44,7 +44,7 @@ begin
   
   
   
-  do ivar = 1,3
+  do ivar = 0,0
     
     imon = 04	
     iday = 01
