@@ -29,7 +29,7 @@ begin
 
 
 
-  dirGrib = "/typhoon/era/new/"
+  dirGrib = "/typhoon/era/daily/"
 
   hours = ispan(0,18,6)
 
@@ -40,13 +40,13 @@ begin
 
   ; list of variables that we need
   ;variables = (/"PV","T","Z","U","V","W","Q"/)
-  variables = (/"V","PV","T","Z","W","Q"/)
+  variables = (/"U","V","T","Z","Q"/)
 
-  nvar=1
+  nvar=5
 
 
 
-  do iy = 2015,2015
+  do iy = 2014,2014
     startDate = cd_inv_calendar(iy,01,01,0,0,0,units,0)
     endDate   = cd_inv_calendar(iy,04,01,0,0,0,units,0)
     print ( startDate + " " + startDate )
@@ -57,7 +57,6 @@ begin
     if (isleapyear(iy)) then
       ndays=366
     end if
-
 
     ndays = 92
 
@@ -73,7 +72,7 @@ begin
       if (fileexists(fileName) ) then
         in  := addfile (fileName, "w")
       else
-        print ( "nonexistant input file" + fileName)
+        print ( "nonexistant output file" + fileName + " Exit!")
         exit
       end if
       
@@ -91,8 +90,16 @@ begin
           dateFil = cd_calendar(dates,-3)
       
           ;print(dates + " " + dateFil) 
-          fils := dirGrib + "ei.oper.an.pl.regn128uv." + dateFil + ".aiyyer484185.grb"
-          print(fils)
+
+          fils := dirGrib + "ei.oper.an.pl.regn128sc." + dateFil + ".aiyyer492315.grb"
+
+
+          if (  variables(ivar) .eq. "U" .or.  variables(ivar) .eq. "V") then
+            fils := dirGrib + "ei.oper.an.pl.regn128uv." + dateFil + ".aiyyer492315.grb"
+          end if
+
+
+          ;print(fils)
 
           inGrib   := addfiles (fils, "r")
           ListSetType (inGrib, "join")             ; concatenate or "merge" (default)
@@ -117,9 +124,9 @@ begin
           end if  
           
           ;printVarSummary(dat)
-          print ( dat&time + " " + cd_calendar(dat&time,-3) )
+          print ( dat&time + " " + cd_calendar(dat&time,-3) + " " + dat(0,{850.},{10.},{300.}) )
       
-          print ( "writing to the file" + fileName)
+          print ( variables(ivar) + " Now writing to the file" + fileName)
           in->$variables(ivar)$=dat
 
           print (" " )

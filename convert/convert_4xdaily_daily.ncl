@@ -23,20 +23,24 @@ begin
   variables = (/"PV","W","V","U","Q","Z","T"/)
 ; what are the filenames called? set the prefix here
   varFile = (/"pv","omega","uv","uv","hum","geo","geo","omega"/)
+
+
+  variables = (/"W"/)
+  varFile   = (/"sc"/)
+
 ; the names of variables in the datafiles
   varName = variables + "_GDS4_ISBL"
   
-  ystart    = 1980
+  ystart    = 2019
   nyears    = 1
-  ndays     = 275
-  nvars     = 2   ; missing omega and PV for months 1-3
+  ndays     = 365
+  nvars     = 1   ; missing omega and PV for months 1-3
   
-  ndays = 62
 
 ;---------------------------------------------------------------------------------------------
   do iy = ystart,ystart+nyears-1
     
-    im = 04
+    im = 01
     id = 01
     ih = 00
     mi = 00
@@ -50,12 +54,11 @@ begin
     
     do ntimes = 0,ndays-1
       dateFil = cd_calendar(date,-2)
-      print(date + " " + dateFil)      
+      print(date + " " + dateFil)  
       first = False
-      do ivar = 0,1
-        fils := systemfunc("ls /typhoon/era/daily/" + dateFil + "*." +  varFile(ivar)  + ".grib" )
-                                ;rint (fils)
-                                ;rint (" ")
+      do ivar = 0,0       
+        fils := systemfunc("ls /typhoon/era/daily/2019/*" + dateFil + "*" )
+        print (fils)
         in   := addfiles (fils, "r")
         ListSetType (in, "join")             ; concatenate or "merge" (default)
 ; now read the data 
